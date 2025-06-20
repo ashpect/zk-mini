@@ -10,3 +10,4 @@ def matrix_multiply(matrix1, matrix2):
     
     # Convert back to list of lists for compatibility
     return result.tolist()
+    

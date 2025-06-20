@@ -1,15 +1,10 @@
 # zk-mini
 Implementation of a minimal ZK system.
-V1 : Very basic zk system which is not succint
+V1 : Very basic zk system which is not succint, for learning purposes.
 
-
-All good ideas come from the Rareskills ZK Book. All bad ideas are my own.
-
-## Features
+## Features/TODO
 
 - [X] Basic ZK system
-
-## TODO
 - [ ] Make z public
 - [ ] Generalize for any set of constraints
 - [ ] Make the system succint

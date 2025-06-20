@@ -2,6 +2,10 @@ import numpy as np
 from py_ecc.bn128 import G2, pairing, eq, FQ12
 
 def verify(Ow_g1, Rw, Lw):
+    """
+    Version 0 : Verify the proof
+    """
+
     # Step 1 : Compute E2(E1(Ow)) 
     Ow_g2 = np.array([FQ12.one(), FQ12.one()])
     for i in range(2):
