@@ -2,24 +2,30 @@ from py_ecc.bn128 import G1, G2, multiply, add, curve_order
 import numpy as np
 import galois
 from utils.matrix import matrix_GF
+from utils.lagrange import get_polys
 
-def r1cs_to_qap(r1cs, p):
+def r1cs_to_qap_polys(r1cs):
     """
-    Converts R1CS system to QAP
+    Converts R1CS system to QAP Polynomials
     """
-
-    GF = galois.GF(p)
-
+    
     # Convert matrix elements to Galois Field elements
-    W = matrix_GF(r1cs.W.matrix, GF)
-    L = matrix_GF(r1cs.L.matrix, GF)
-    R = matrix_GF(r1cs.R.matrix, GF)
-    OUT = matrix_GF(r1cs.OUT.matrix, GF)
+    W_galois = matrix_GF(r1cs.W.matrix)
+    L_galois = matrix_GF(r1cs.L.matrix)
+    R_galois = matrix_GF(r1cs.R.matrix)
+    OUT_galois = matrix_GF(r1cs.OUT.matrix)
 
     # Sanity Check :
-    assert(np.all(np.matmul(OUT, W) == np.matmul(L, W) * np.matmul(R, W)))
+    assert(np.all(np.matmul(OUT_galois, W_galois) == np.matmul(L_galois, W_galois) * np.matmul(R_galois, W_galois)))
 
-    return W, L, R, OUT
+    L_polys, R_polys, O_polys = get_polys(L_galois, R_galois, OUT_galois, r1cs.L.rows_size)
+
+    return L_polys, R_polys, O_polys, W_galois
+
+    # CHECKING
+    print(L_galois)
+    polynomial = L_polys[2]
+    print(polynomial)
 
 def prover(r1cs):
     """
@@ -71,7 +77,5 @@ def prover(r1cs):
 
         Ow_g1[j] = point
 
-    p = 79
-    r1cs_to_qap(r1cs, p)
-
+    print("Prover Done")
     return Ow_g1, Rw, Lw

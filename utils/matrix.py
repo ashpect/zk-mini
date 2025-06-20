@@ -1,4 +1,5 @@
 import numpy as np
+from utils.constants import p, GF
 
 def matrix_multiply(matrix1, matrix2):
     # Convert inputs to numpy arrays if they aren't already
@@ -11,10 +12,9 @@ def matrix_multiply(matrix1, matrix2):
     # Convert back to list of lists for compatibility
     return result.tolist()
 
-def matrix_GF(matrix, GF):
-    prime = GF.characteristic
-    mat_new = np.full(matrix.shape, prime)
-    mat_new = (matrix + mat_new) % prime
+def matrix_GF(matrix):
+    mat_new = np.full(matrix.shape, p)
+    mat_new = (matrix + mat_new) % p
     return GF(mat_new)
 
     
