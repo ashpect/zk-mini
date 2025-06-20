@@ -7,7 +7,7 @@ All good ideas come from the Rareskills ZK Book. All bad ideas are my own.
 
 ## Features
 
-- [ ] Basic ZK system
+- [X] Basic ZK system
 
 ## TODO
 - [ ] Make z public
