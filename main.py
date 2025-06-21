@@ -1,7 +1,7 @@
 import numpy as np
 from py_ecc.bn128 import G1, G2, pairing, add, multiply, eq, curve_order, FQ12
-from verifier.v0 import verify
-from prover.p0 import prover
+from verifier.v0 import verify, verify_qap, verifier_qap_tau_random
+from prover.p0 import prover, prover_qap
 
 class R1cs_matrix:
     def __init__(self, matrix):
@@ -79,8 +79,12 @@ def v0_main():
     verify(Ow_g1, Rw, Lw)
 
 def v1_main():
+    r1cs = mock_example()
+    tau = verifier_qap_tau_random()
+    L, R, O, t, h = prover_qap(r1cs, tau)
+    verify_qap(L, R, O, t, h)
     pass
 
 if __name__ == "__main__":
-    v0_main()
+    v1_main()
 
