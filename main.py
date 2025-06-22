@@ -34,6 +34,18 @@ def test_all():
         v0_main(example_type)
         v1_main(example_type)
 
+def v2_main(example_number):
+
+    # Step 0 : Mock Example
+    r1cs, witness = get_mock_example(example_number)
+
+    # Step 1 : Trusted setup generates public parameters
+    alpha_g1, beta_g1, tau_g1, tau_g2, ht_srs, phi_arr = grothv0(r1cs)
+
+    # Prover computation to generate proof
+    # A, B, C = prover_grothv0(r1cs, alpha_g1, beta_g1, tau_g1, tau_g2, ht_srs, phi_arr)
+
+
 if __name__ == "__main__":
-    test_all()
-    #v2_main(2)
+    #test_all()
+    v2_main(2)
