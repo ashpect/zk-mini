@@ -27,21 +27,22 @@ def prover(r1cs):
     # print(Witness_ec1.shape)
     # print(Witness_ec2.shape)
 
-    Lw = np.full(L.shape[0], G1)
+
+    Lw = np.full((L.shape[0], 2), G1)
     for j in range(L.shape[0]):
         point = multiply(Witness_ec1[0], L[j][0]) # NOTE - curve points comes first, learnt it the hard way lol.
         for i in range(1, W.size): 
             point = add(point, multiply(Witness_ec1[i], L[j][i]))
         Lw[j] = point
 
-    Rw = np.full(R.shape[0], G2)
+    Rw = np.full((R.shape[0], 2), G2)
     for j in range(len(R)):
         point = multiply(Witness_ec2[0], R[j][0])
         for i in range(1, W.size):
             point = add(point, multiply(Witness_ec2[i], R[j][i]))
         Rw[j] = point
 
-    Ow_g1 = np.full(OUT.shape[0], G1)
+    Ow_g1 = np.full((OUT.shape[0], 2), G1)
     for j in range(len(OUT)):
         point = multiply(Witness_ec1[0], OUT[j][0])
         for i in range(1, W.size):

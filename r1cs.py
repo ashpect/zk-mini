@@ -32,4 +32,10 @@ class R1CS:
         self.sanity_check()
 
     def sanity_check(self):
-        assert(np.all(np.matmul(self.OUT.matrix, self.W.matrix) == np.matmul(self.L.matrix, self.W.matrix) * np.matmul(self.R.matrix, self.W.matrix)))
+        assert(np.all(
+            np.matmul(self.OUT.matrix, self.W.matrix) ==
+            np.multiply(
+                np.matmul(self.L.matrix, self.W.matrix),
+                np.matmul(self.R.matrix, self.W.matrix)
+            )
+        ))
