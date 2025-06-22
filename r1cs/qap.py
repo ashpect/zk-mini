@@ -17,8 +17,6 @@ def r1cs_to_qap(r1cs):
 
     L_polys, R_polys, O_polys = get_r1cs_interpolated_polys(L_galois, R_galois, OUT_galois, r1cs.L.rows_size)
 
-    print("R1CS to QAP Polys Done")
-
     return L_polys, R_polys, O_polys
 
 def calculate_t_and_h(Lw_qap, Rw_qap, Ow_qap, deg):
