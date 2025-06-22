@@ -1,18 +1,18 @@
 from py_ecc.bn128 import G1, G2, multiply, add, curve_order
 import numpy as np
 
-def prover(r1cs):
+def prover(r1cs, w):
     """
     Prover does the following :
     1. Convert witness vector to Elliptic Curve Points E1 and E2
     """ 
     # Step 1 : Converting witness vector to Elliptic Curve Point
-    Witness_ec1 = r1cs.W.get_witness_G1()
-    Witness_ec2 = r1cs.W.get_witness_G2()
+    Witness_ec1 = w.get_witness_G1()
+    Witness_ec2 = w.get_witness_G2()
 
 
     # Step 2 : Finding LW1, Rw2, OW1 [Lw, Rw, Ow for simplicity]
-    W = r1cs.W.matrix
+    W = w.matrix
     L = r1cs.L.matrix
     R = r1cs.R.matrix
     OUT = r1cs.OUT.matrix

@@ -1,55 +1,40 @@
 # QAP Prover
-
-import numpy as np
 import galois
+from r1cs.qap import r1cs_to_qap, calculate_t_and_h
 from utils.matrix import matrix_GF
-from utils.lagrange import get_polys
 from utils.constants import p, GF
 
-def r1cs_to_qap_polys(r1cs):
-    """
-    Converts R1CS system to QAP Polynomials
-    """
-    
-    # Convert matrix elements to Galois Field elements
-    W_galois = matrix_GF(r1cs.W.matrix)
-    L_galois = matrix_GF(r1cs.L.matrix)
-    R_galois = matrix_GF(r1cs.R.matrix)
-    OUT_galois = matrix_GF(r1cs.OUT.matrix)
-
-    # Sanity Check :
-    assert(np.all(np.matmul(OUT_galois, W_galois) == np.matmul(L_galois, W_galois) * np.matmul(R_galois, W_galois)))
-
-    L_polys, R_polys, O_polys = get_polys(L_galois, R_galois, OUT_galois, r1cs.L.rows_size)
-    print("R1CS to QAP Polys Done")
-
-    return L_polys, R_polys, O_polys, W_galois
-
-
-def prover_qap(r1cs, tau):
+def prover_qap_no_trusted_setup(r1cs, w, tau):
     """
     Prover does the following :
-    TODO
+    1. Get values of all poly at tau
+    2. Return the values
+    We are trusting the prover to do correct poly operations.
     """ 
-    L_polys, R_polys, O_polys, W_galois = r1cs_to_qap_polys(r1cs)
-    
+
+    # Calulate W in galois field
+    W_galois = matrix_GF(w.matrix)
+
+    # Get the R1CS to QAP Polynomials
+    L_polys, R_polys, O_polys = r1cs_to_qap(r1cs)
+
     # Random poly of deg n-1 in GF(p)
     polynomial = galois.primitive_poly(p, r1cs.L.rows_size-1 , method="random")
 
     # Final Lw , initiating with random poly and size m(colms) for example
     Lw_qap = galois.Poly([0], field=GF)
-    for i in range(r1cs.W.size):
+    for i in range(w.size):
         Lw_qap = L_polys[i]*W_galois[i] + Lw_qap
 
     Rw_qap = galois.Poly([0], field=GF)
-    for i in range(r1cs.W.size):
+    for i in range(w.size):
         Rw_qap = R_polys[i]*W_galois[i] + Rw_qap
     
     Ow_qap = galois.Poly([0], field=GF)
-    for i in range(r1cs.W.size):
+    for i in range(w.size):
         Ow_qap = O_polys[i]*W_galois[i] + Ow_qap
 
-    # Calulate h
+    # Get the t and h polynomials
     t, h = calculate_t_and_h(Lw_qap, Rw_qap, Ow_qap, r1cs.L.rows_size)
 
     # Get values of all poly at tau
@@ -60,27 +45,3 @@ def prover_qap(r1cs, tau):
     h_tau = h(tau)
 
     return Lw_qap_tau, Rw_qap_tau, Ow_qap_tau, t_tau, h_tau
-
-    
-def calculate_t_and_h(Lw_qap, Rw_qap, Ow_qap, deg):
-    """
-    Calculate the h polynomial
-    """
-    # Sanity Check : Deg of Lw_qap, Rw_qap, Ow_qap should be at most n-1
-    assert(Lw_qap.degree <= deg-1 and Rw_qap.degree <= deg-1 and Ow_qap.degree <= deg-1)
-
-    # Verification step will be : 
-    # The "underlying" vectors of Lw_qap*Rw_qap and Ow_qap are equal, even though the polynomials that interpolate have diff degree
-    # Underlying here kinda the x axis values
-    # For 2 vectors, the product polynomial interpolates the Hadamard product
-
-    t = galois.Poly([1], field=GF)
-    for i in range(1, deg):
-        t = t * galois.Poly([1, p-i], field=GF)
-
-    h = (Lw_qap*Rw_qap - Ow_qap) // t
-
-    # Check cause above doesn't return remainder
-    assert(Lw_qap*Rw_qap == Ow_qap + h*t)
-
-    return t,h

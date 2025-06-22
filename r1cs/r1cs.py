@@ -9,6 +9,7 @@ class R1cs_matrix:
         
 class Witness:
     def __init__(self, witness):
+        # W: witness vector (1D array)
         self.matrix = witness # naming it matrix for consistency
         self.size = witness.shape[0]
 
@@ -21,21 +22,17 @@ class Witness:
         return np.array([multiply(G2, self.matrix[i]) for i in range(self.size)])
 
 class R1CS:
-    def __init__(self, W: Witness, L: R1cs_matrix, R: R1cs_matrix, OUT: R1cs_matrix):
-        # W: witness vector (1D array)
+    def __init__(self, L: R1cs_matrix, R: R1cs_matrix, OUT: R1cs_matrix):
         # L, R, OUT: constraint matrices (2D arrays with same dimensions)
-
-        self.W = W
         self.L = L
         self.R = R
         self.OUT = OUT
-        self.sanity_check()
 
-    def sanity_check(self):
+def sanity_check(L, R, OUT, w):
         assert(np.all(
-            np.matmul(self.OUT.matrix, self.W.matrix) ==
+            np.matmul(OUT, w) ==
             np.multiply(
-                np.matmul(self.L.matrix, self.W.matrix),
-                np.matmul(self.R.matrix, self.W.matrix)
+                np.matmul(L, w),
+                np.matmul(R, w)
             )
         ))

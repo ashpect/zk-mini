@@ -1,28 +1,30 @@
 from verifier.v0 import verify
 from verifier.v1 import verify_qap, verifier_qap_tau_random
 from prover.p0 import prover
-from prover.p1 import prover_qap
+from prover.p1 import prover_qap_no_trusted_setup
+from prover.p2 import prover_grothv0
+from trusted_setup.tau import grothv0
 from mock_examples import get_mock_example
 
 def v0_main(example_number):
     # Step 1 : Mock Example
-    r1cs = get_mock_example(example_number)
+    r1cs, witness = get_mock_example(example_number)
 
     # Step 2 : Prover
-    Ow_g1, Rw, Lw = prover(r1cs)
+    Ow_g1, Rw, Lw = prover(r1cs, witness)
 
     # Step 3 : Verify the proof
     verify(Ow_g1, Rw, Lw)
 
 def v1_main(example_number):
     # Step 0 : Mock Example
-    r1cs = get_mock_example(example_number)
+    r1cs, witness = get_mock_example(example_number)
 
     # Step 1 : Generate a random tau
     tau = verifier_qap_tau_random()
 
     # Step 2 : Prover
-    L, R, O, t, h = prover_qap(r1cs, tau)
+    L, R, O, t, h = prover_qap_no_trusted_setup(r1cs, witness, tau)
 
     # Step 3 : Verify the proof
     verify_qap(L, R, O, t, h)
@@ -34,4 +36,4 @@ def test_all():
 
 if __name__ == "__main__":
     test_all()
-
+    #v2_main(2)

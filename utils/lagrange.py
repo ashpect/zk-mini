@@ -7,9 +7,10 @@ def interpolate_column(col, num_rows):
     # print(galois.lagrange_poly(xs, col))
     return galois.lagrange_poly(xs, col)
 
-
-def get_polys(L_galois, R_galois, O_galois, num_rows):
-
+def get_r1cs_interpolated_polys(L_galois, R_galois, O_galois, num_rows):
+    """
+    Takes in r1cs matrices and returns the lagrange polynomial
+    """
     # axis 0 is the columns. (iterates over columns)
     # apply_along_axis is the same as doing a for loop over the columns 
     # and collecting the results in an array
