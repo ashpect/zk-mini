@@ -1,6 +1,6 @@
 import galois
-from py_ecc.bn128 import field_modulus
+from py_ecc.bn128 import curve_order
 
 # Global prime for Galois Field
-p = 79
+p = curve_order
 GF = galois.GF(p) 
