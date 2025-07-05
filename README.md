@@ -11,3 +11,7 @@ Implementation of a minimal ZK system. <br>
 - [ ] Support for public witnesses
 - [ ] Test for multiple general set of R1CS constraints
 - [ ] Generate constraints from a program 
+
+
+v2 (trusted setup (only tau), prover can still fake) : https://www.rareskills.io/post/elliptic-curve-qap.
+v3 (groth 16 without public outputs) : 

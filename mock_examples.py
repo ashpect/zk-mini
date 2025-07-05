@@ -1,6 +1,6 @@
 import numpy as np
 import random
-from r1cs.r1cs import R1CS, R1cs_matrix, Witness
+from r1cs.r1cs import R1CS, R1cs_matrix, Witness, sanity_check
 
 def get_mock_example(example_type: int):
     """
@@ -41,7 +41,10 @@ def mock_example_1():
         [0, 0, 0, 1, 0],
     ])
 
-    return R1CS(R1cs_matrix(l), R1cs_matrix(r), R1cs_matrix(out)), Witness(witness)
+    r1cs = R1CS(R1cs_matrix(l), R1cs_matrix(r), R1cs_matrix(out))
+    witness = Witness(witness)
+    sanity_check(r1cs, witness)
+    return r1cs, witness
 
 def mock_example_2():
     """
@@ -81,7 +84,10 @@ def mock_example_2():
     # create the witness vector
     witness = np.array([1, r, x, y, z, u, v1, v2])
 
-    return R1CS(R1cs_matrix(L), R1cs_matrix(R), R1cs_matrix(O)), Witness(witness)
+    r1cs = R1CS(R1cs_matrix(L), R1cs_matrix(R), R1cs_matrix(O))
+    witness = Witness(witness)
+    sanity_check(r1cs, witness)
+    return r1cs, witness
 
 # Doesnt work cause we expect the shape of O,L,R to be 2D 
 # def mock_example():

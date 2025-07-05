@@ -32,7 +32,7 @@ def calculate_t_and_h(Lw_qap, Rw_qap, Ow_qap, deg):
     # For 2 vectors, the product polynomial interpolates the Hadamard product
 
     t = galois.Poly([1], field=GF)
-    for i in range(1, deg):
+    for i in range(1, deg+1):
         t = t * galois.Poly([1, p-i], field=GF)
 
     h = (Lw_qap*Rw_qap - Ow_qap) // t

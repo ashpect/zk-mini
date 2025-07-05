@@ -28,11 +28,18 @@ class R1CS:
         self.R = R
         self.OUT = OUT
 
-def sanity_check(L, R, OUT, w):
-        assert(np.all(
-            np.matmul(OUT, w) ==
-            np.multiply(
-                np.matmul(L, w),
-                np.matmul(R, w)
-            )
-        ))
+def sanity_check(r1cs, witness):
+    L = r1cs.L.matrix
+    R = r1cs.R.matrix
+    OUT = r1cs.OUT.matrix
+    w = witness.matrix
+        
+    assert(np.all(
+        np.matmul(OUT, w) ==
+        np.multiply(
+            np.matmul(L, w),
+            np.matmul(R, w)
+        )
+    ))
+
+    print("R1CS sanity check passed")

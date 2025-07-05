@@ -1,10 +1,9 @@
-from verifier.v0 import verify
-from verifier.v1 import verify_qap, verifier_qap_tau_random
-from verifier.v2 import verify_grothv0
+from verifier.verifier import verify, verify_qap, verify_grothv0
 from prover.p0 import prover
 from prover.p1 import prover_qap_no_trusted_setup
-from prover.p2 import prover_grothv0
-from trusted_setup.tau import grothv0
+from prover.p2 import prover_grothv0, qap_trusted
+from trusted_setup.tau import grothv0, generate_random_scalars
+from trusted_setup.verify_tau import verify_tau
 from mock_examples import get_mock_example
 
 def v0_main(example_number):
@@ -22,7 +21,7 @@ def v1_main(example_number):
     r1cs, witness = get_mock_example(example_number)
 
     # Step 1 : Generate a random tau
-    tau = verifier_qap_tau_random()
+    _,_,tau = generate_random_scalars()
 
     # Step 2 : Prover
     L, R, O, t, h = prover_qap_no_trusted_setup(r1cs, witness, tau)
@@ -41,14 +40,24 @@ def v2_main(example_number):
     r1cs, witness = get_mock_example(example_number)
 
     # Step 1 : Trusted setup generates public parameters
-    alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_arr, L_polys, R_polys, O_polys = grothv0(r1cs)
+    alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys = grothv0(r1cs)
+
+    # Step 2 : Verify the trusted outputs (ideally done inside prover)
+    verify_tau(alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys, r1cs.L.rows_size)
 
     # Prover computation to generate proof
-    A, B, C = prover_grothv0(r1cs, alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_arr, L_polys, R_polys, O_polys, witness)
+    A, B, C = prover_grothv0(r1cs, witness)
 
     # Step 2 : Verify the proof
     # verify_grothv0(A, B, C, alpha_g1, beta_g2)
 
+def poc_main(example_number):
+    r1cs, witness = get_mock_example(example_number)
+    print("POC STARTING")
+    qap_trusted(r1cs, witness)
+    print("POC DONE")
+
 if __name__ == "__main__":
-    #test_all()
+    # test_all()    
+    # poc_main(1)
     v2_main(1)
