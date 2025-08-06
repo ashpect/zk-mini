@@ -104,6 +104,7 @@ def generate_phi(L_polys, R_polys, O_polys, alpha, beta, tau):
 
     return phi_arr
 
+# TODO : normal generate and then GF return and is GF necessary ?
 def generate_random_scalars():
     """
     Generate random scalars for the trusted setup

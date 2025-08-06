@@ -1,4 +1,5 @@
 import galois
+import random
 from py_ecc.bn128 import multiply, G1, add, G2, pairing, neg, FQ12
 from r1cs.qap import calculate_t_and_h, r1cs_to_qap
 from utils.matrix import matrix_GF
@@ -11,13 +12,14 @@ def qap_trusted(r1cs, w):
     print("L_polys", L_polys)
     print("R_polys", R_polys)
     print("O_polys", O_polys)
-    tau = 5 # for testing
+    tau = GF(random.randint(1, p-1))
+    # tau = 5 # for testing
 
     deg = r1cs.L.rows_size
     print(deg)
-    tau_g1 = [multiply(G1, tau**i) for i in range(deg-1,-1,-1)]
-    tau_g2 = [multiply(G2, tau**i) for i in range(deg-1,-1,-1)] 
-    test =  [tau**i for i in range(deg-1,-1,-1)] 
+    tau_g1 = [multiply(G1, int(tau**i)) for i in range(deg-1,-1,-1)]
+    tau_g2 = [multiply(G2, int(tau**i)) for i in range(deg-1,-1,-1)] 
+    test =  [int(tau**i) for i in range(deg-1,-1,-1)] 
     print("test", test)
 
     # t = (x-1)(x-2)...(x-n)
@@ -101,17 +103,21 @@ def prover_grothv0(r1cs, w):
     - A, B, C - tuple of elements in G1, G2, G1
     """
 
+    # alpha = random.randint(1, p-1)
+    # beta = random.randint(1, p-1)
+    # tau = random.randint(1, p-1)
+
     L_polys, R_polys, O_polys = r1cs_to_qap(r1cs)
     print("L_polys", L_polys)
     print("R_polys", R_polys)
     print("O_polys", O_polys)
-    tau = 5 # for testing
+    tau = GF(5) # for testing, value inside GF should be 0 <= value < p
 
     deg = r1cs.L.rows_size
     print(deg)
-    tau_g1 = [multiply(G1, tau**i) for i in range(deg-1,-1,-1)]
-    tau_g2 = [multiply(G2, tau**i) for i in range(deg-1,-1,-1)] 
-    test =  [tau**i for i in range(deg-1,-1,-1)] 
+    tau_g1 = [multiply(G1, int(tau**i)) for i in range(deg-1,-1,-1)]
+    tau_g2 = [multiply(G2, int(tau**i)) for i in range(deg-1,-1,-1)] 
+    test =  [int(tau**i) for i in range(deg-1,-1,-1)] 
     print("test", test)
 
     # t = (x-1)(x-2)...(x-n)
@@ -119,7 +125,7 @@ def prover_grothv0(r1cs, w):
     for i in range(1, deg+1):
         t = t * galois.Poly([1, p-i], field=GF)
 
-    t_at_tau = t(tau)
+    t_at_tau = t(tau) 
     print("t_at_tau", t_at_tau)
     ht_srs = [multiply(G1, int(t_at_tau * tau**i)) for i in range(deg-2,-1,-1)]
     test2 = [int(t_at_tau * tau**i) for i in range(deg-2,-1,-1)]
@@ -167,23 +173,25 @@ def prover_grothv0(r1cs, w):
 
     # -----------
 
-    alpha = 5
+    alpha = 4
     beta = 5
     alpha_g1 = multiply(G1, alpha)
     beta_g2 = multiply(G2, beta)
 
     # Issue is in this part of code. Hmmmmmm
-    phi_srs = []
-    for i in range(len(L_polys)):
-        phi_element = alpha * L_polys[i](tau) + beta * R_polys[i](tau) + O_polys[i](tau)
-        phi_element = multiply(G1, int(phi_element))
-        phi_srs.append(phi_element)
+    # phi_srs = []
+    # for i in range(len(L_polys)):
+    #     phi_element = GF(alpha) * L_polys[i](tau) + GF(beta) * R_polys[i](tau) + O_polys[i](tau)
+    #     phi_element = multiply(G1, int(phi_element))
+    #     phi_srs.append(phi_element)
 
-    C_mid = [multiply(phi_srs[i],int(W_galois[i])) for i in range(len(phi_srs))]
-    C_part1 = None
-    for i in range(len(C_mid)):
-        C_part1 = add(C_part1,C_mid[i])
+    # C_mid = [multiply(phi_srs[i],int(W_galois[i])) for i in range(len(phi_srs))]
+    # C_part1 = None
+    # for i in range(len(C_mid)):
+    #     C_part1 = add(C_part1,C_mid[i])
 
+    haha = GF(beta)*Lw_qap(tau) + GF(alpha)*Rw_qap(tau) + Ow_qap(tau)
+    C_part1 = multiply(G1,int(haha))
 
     C_part2 = inner_product(ht_srs, h_qap_coeffs) 
     C = add(C_part1,C_part2)
@@ -196,6 +204,10 @@ def prover_grothv0(r1cs, w):
     lhs = pairing(B, neg(A))
     rhs_1 = pairing(beta_g2, alpha_g1)
     rhs_2 = pairing(G2, C)
+
+    # print("lhs",lhs)
+    # print("rhs", rhs_1)
+    # print("rhs_2",rhs_2)
 
     # the equivalent of adding in exponent space would be multiply 
     assert (lhs * rhs_1 * rhs_2) == FQ12.one(), f" lhs should match rhs"

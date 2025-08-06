@@ -40,10 +40,10 @@ def v2_main(example_number):
     r1cs, witness = get_mock_example(example_number)
 
     # Step 1 : Trusted setup generates public parameters
-    alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys = grothv0(r1cs)
+    # alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys = grothv0(r1cs)
 
     # Step 2 : Verify the trusted outputs (ideally done inside prover)
-    verify_tau(alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys, r1cs.L.rows_size)
+    # verify_tau(alpha_g1, beta_g2, tau_g1, tau_g2, ht_srs, phi_srs, L_polys, R_polys, O_polys, r1cs.L.rows_size)
 
     # Prover computation to generate proof
     A, B, C = prover_grothv0(r1cs, witness)
